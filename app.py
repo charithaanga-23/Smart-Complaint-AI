@@ -107,6 +107,15 @@ def login_page():
 def index_page():
     return send_from_directory(".", "index.html")
 @app.post("/predict")
+
+@app.get("/style.css")
+def style():
+    return send_from_directory(".", "style.css")
+
+@app.get("/script.js")
+
+def script():
+    return send_from_directory(".", "script.js")
 def predict():
     data = request.get_json(silent=True)
 
