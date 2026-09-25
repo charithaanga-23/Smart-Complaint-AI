@@ -54,3 +54,15 @@ form.addEventListener("submit", async function (event) {
     submitBtn.disabled = false;
     submitBtn.textContent = "Analyze Complaint";
 });
+document.getElementById("newComplaint").addEventListener("click", function () {
+    document.getElementById("complaintForm").reset();
+
+    document.getElementById("result").classList.add("hidden");
+
+    document.getElementById("error").textContent = "";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+});
