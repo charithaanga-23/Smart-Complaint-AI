@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -97,11 +97,15 @@ def get_priority(category, complaint):
 
 @app.get("/")
 def home():
-    return jsonify({
-        "message": "Smart Complaint AI backend is running",
-        "endpoint": "/predict"
-    })
+    return send_from_directory(".", "login.html")
 
+@app.get("/login.html")
+def login_page():
+    return send_from_directory(".", "login.html")
+
+@app.get("/index.html")
+def index_page():
+    return send_from_directory(".", "index.html")
 @app.post("/predict")
 def predict():
     data = request.get_json(silent=True)
@@ -143,4 +147,9 @@ def predict():
     })
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    import os
+
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000))
+    )
