@@ -1,120 +1,320 @@
 <!DOCTYPE html>
-<script>
-    if (localStorage.getItem("loggedIn") !== "true") {
-        window.location.href = "login.html";
-    }
-</script>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Smart Complaint AI</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<button onclick="logout()" class="logout-btn">Logout</button>
-    <div class="page">
-        <header class="hero">
-            <div>
-                <span class="eyebrow">AI CUSTOMER SUPPORT</span>
-                <h1>Smart Complaint Classifier</h1>
-                <p>Submit a complaint and get an AI-based category, priority and department recommendation.</p>
-            </div>
-            <div class="ai-badge">AI</div>
-        </header>
 
-        <main class="card">
-            <form id="complaintForm">
-                <section>
-                    <h2>Customer Details</h2>
-                    <div class="grid">
-                        <label>
-                            Gender
-                            <select id="gender" required>
-                                <option value="">Select gender</option>
-                                <option>Male</option>
-                                <option>Female</option>
-                                <option>Other</option>
-                            </select>
-                        </label>
+    <!-- Header -->
+    <header class="header">
 
-                        <label>
-                            Age
-                            <input id="age" type="number" min="1" max="120" placeholder="Enter age" required>
-                        </label>
+        <div>
+            <p class="small-title">AI CUSTOMER SUPPORT</p>
 
-                        <label>
-                            Product Category
-                            <select id="product_category" required>
-                                <option value="">Select category</option>
-                                <option>Electronics</option>
-                                <option>Home Appliances</option>
-                                <option>Mobile</option>
-                                <option>Computer</option>
-                                <option>Furniture</option>
-                                <option>Clothing</option>
-                                <option>Other</option>
-                            </select>
-                        </label>
-                    </div>
-                </section>
+            <h1>Smart Complaint Classifier</h1>
 
-                <section>
-                    <h2>Complaint</h2>
-                    <label>
-                        Complaint Description
-                        <textarea id="complaint_text" rows="6"
-                            placeholder="Example: My phone battery drains very quickly and the device becomes hot..."
-                            maxlength="1000" required></textarea>
+            <p class="subtitle">
+                Submit a complaint and get an AI-based category,
+                priority and department recommendation.
+            </p>
+        </div>
+
+        <div class="ai-box">
+            AI
+        </div>
+
+        <button class="logout-btn" onclick="logout()">
+            Logout
+        </button>
+
+    </header>
+
+
+    <!-- Main Card -->
+    <main class="main-card">
+
+        <!-- Customer Details -->
+        <section>
+
+            <h2>Customer Details</h2>
+
+            <div class="customer-grid">
+
+                <!-- Customer Name -->
+                <div class="field">
+
+                    <label for="customerName">
+                        Customer Name
                     </label>
-                    <div class="counter"><span id="count">0</span>/1000</div>
-                </section>
 
-                <button id="submitBtn" type="submit">
-                    <span id="buttonText">Analyze Complaint</span>
-                    <span id="loader" class="loader hidden"></span>
-                </button>
+                    <input
+                        type="text"
+                        id="customerName"
+                        placeholder="Enter customer name"
+                    >
 
-                <p id="error" class="error hidden"></p>
-            </form>
-
-            <section id="result" class="result hidden">
-                <div class="result-head">
-                    <div>
-                        <span class="eyebrow">AI ANALYSIS</span>
-                        <h2>Prediction Result</h2>
-                    </div>
-                    <span id="priorityBadge" class="priority">-</span>
                 </div>
 
-                <div class="result-grid">
-                    <div class="result-box">
-                        <span>Complaint Category</span>
-                        <strong id="category">-</strong>
-                    </div>
-                    <div class="result-box">
-                        <span>Priority</span>
-                        <strong id="priority">-</strong>
-                    </div>
-                    <div class="result-box">
-                        <span>Recommended Department</span>
-                        <strong id="department">-</strong>
-                    </div>
-                    <div class="result-box">
-                        <span>Suggested Response</span>
-                        <strong id="response">-</strong>
-                    </div>
+
+                <!-- Phone Number -->
+                <div class="field">
+
+                    <label for="phoneNumber">
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phoneNumber"
+                        placeholder="Enter phone number"
+                    >
+
                 </div>
 
-                <button class="secondary" type="button" id="newComplaint">Analyze Another Complaint</button>
-            </section>
-        </main>
-    </div>
+
+                <!-- Customer Preference ID -->
+                <div class="field">
+
+                    <label for="preferenceId">
+                        Customer Preference ID
+                    </label>
+
+                    <input
+                        type="text"
+                        id="preferenceId"
+                        placeholder="Enter preference ID"
+                    >
+
+                </div>
+
+
+                <!-- Gender -->
+                <div class="field">
+
+                    <label for="gender">
+                        Gender
+                    </label>
+
+                    <select id="gender">
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Age -->
+                <div class="field">
+
+                    <label for="age">
+                        Age
+                    </label>
+
+                    <input
+                        type="number"
+                        id="age"
+                        placeholder="Enter age"
+                        min="1"
+                        max="120"
+                    >
+
+                </div>
+
+
+                <!-- Product Category -->
+                <div class="field">
+
+                    <label for="product_category">
+                        Product Category
+                    </label>
+
+                    <select id="product_category">
+
+                        <option value="">
+                            Select category
+                        </option>
+
+                        <option value="Mobile">
+                            Mobile
+                        </option>
+
+                        <option value="Computer">
+                            Computer
+                        </option>
+
+                        <option value="Electronics">
+                            Electronics
+                        </option>
+
+                        <option value="Home Appliances">
+                            Home Appliances
+                        </option>
+
+                        <option value="Furniture">
+                            Furniture
+                        </option>
+
+                        <option value="Clothing">
+                            Clothing
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Complaint -->
+        <section class="complaint-section">
+
+            <h2>Complaint</h2>
+
+            <label for="complaint_text">
+                Complaint Description
+            </label>
+
+            <textarea
+                id="complaint_text"
+                maxlength="1000"
+                placeholder="Example: My phone battery drains very quickly and the device becomes hot..."
+            ></textarea>
+
+            <div class="counter">
+                <span id="count">0</span>/1000
+            </div>
+
+
+            <button
+                id="submitBtn"
+                class="analyze-btn"
+                type="submit"
+                form="complaintForm"
+            >
+                Analyze Complaint
+            </button>
+
+        </section>
+
+
+        <!-- Hidden form used by existing AI JavaScript -->
+        <form id="complaintForm" style="display:none;"></form>
+
+
+        <!-- Error -->
+        <p id="error"></p>
+
+
+        <!-- AI Results -->
+        <section id="result" class="result-section hidden">
+
+            <h2>AI Analysis Result</h2>
+
+            <div class="result-grid">
+
+                <div class="result-card">
+                    <h3>Complaint Category</h3>
+                    <p id="category">-</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>Priority</h3>
+                    <p id="priority">-</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>Suggested Department</h3>
+                    <p id="department">-</p>
+                </div>
+
+            </div>
+
+
+            <div class="response-card">
+
+                <h3>Suggested Response</h3>
+
+                <p id="response">-</p>
+
+            </div>
+
+
+            <button
+                id="newComplaint"
+                class="new-complaint-btn"
+                type="button"
+            >
+                Analyze Another Complaint
+            </button>
+
+        </section>
+
+    </main>
+
+
     <script src="script.js"></script>
-<script>
-    function logout() {
-        window.location.href = "login.html";
-    }
-</script>
+
+
+    <script>
+
+        // Character counter
+        const complaintBox =
+            document.getElementById("complaint_text");
+
+        const count =
+            document.getElementById("count");
+
+        if (complaintBox && count) {
+
+            complaintBox.addEventListener("input", function () {
+
+                count.textContent =
+                    complaintBox.value.length;
+
+            });
+
+        }
+
+
+        // Logout
+        function logout() {
+
+            localStorage.removeItem("loggedIn");
+
+            window.location.href = "login.html";
+
+        }
+
+    </script>
+
 </body>
+
 </html>
