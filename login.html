@@ -19,11 +19,12 @@
             justify-content: center;
             align-items: center;
             background: linear-gradient(135deg, #0f172a, #312e81, #2563eb);
+            padding: 20px;
         }
 
         .login-card {
-            width: 380px;
-            padding: 40px;
+            width: 420px;
+            padding: 38px;
             background: rgba(255, 255, 255, 0.97);
             border-radius: 20px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
@@ -40,15 +41,33 @@
             margin-bottom: 8px;
         }
 
-        .subtitle {
+        .welcome {
             color: #64748b;
-            margin-bottom: 30px;
             font-size: 14px;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .feature {
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 7px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
         }
 
         .input-group {
             text-align: left;
-            margin-bottom: 18px;
+            margin-bottom: 17px;
         }
 
         label {
@@ -73,27 +92,125 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
 
-        button {
+        .password-box {
+            position: relative;
+        }
+
+        .password-box input {
+            padding-right: 70px;
+        }
+
+        .show-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: auto;
+            padding: 4px 6px;
+            margin: 0;
+            background: none;
+            color: #4f46e5;
+            font-size: 12px;
+            border: none;
+        }
+
+        .show-btn:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+            margin: 5px 0 18px;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .remember input {
+            width: auto;
+            accent-color: #4f46e5;
+        }
+
+        .login-btn,
+        .create-btn {
             width: 100%;
             padding: 14px;
-            margin-top: 10px;
             border: none;
             border-radius: 10px;
-            background: linear-gradient(90deg, #4f46e5, #2563eb);
             color: white;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
         }
 
+        .login-btn {
+            background: linear-gradient(90deg, #4f46e5, #2563eb);
+        }
+
+        .create-btn {
+            margin-top: 10px;
+            background: white;
+            color: #4f46e5;
+            border: 1px solid #6366f1;
+        }
+
         button:hover {
             opacity: 0.9;
         }
 
-        #error {
+        .links {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        #error,
+        #registerError {
             color: #dc2626;
-            margin-top: 15px;
+            margin-top: 13px;
             font-size: 14px;
+        }
+
+        .register-box {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .register-box h2 {
+            text-align: center;
+            color: #1e293b;
+            margin-bottom: 18px;
+        }
+
+        .cancel-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #e2e8f0;
+            color: #334155;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
         }
 
         .footer {
@@ -101,69 +218,362 @@
             color: #94a3b8;
             font-size: 12px;
         }
+
+        .demo {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                width: 100%;
+                padding: 28px 22px;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="login-card">
+<div class="login-card">
 
-        <div class="logo">🤖</div>
+    <div class="logo">🤖</div>
 
-        <h1>Smart Complaint AI</h1>
+    <h1>Log in</h1>
 
-        <p class="subtitle">
-            AI-powered customer complaint analysis
-        </p>
+    <p class="welcome">
+        Welcome back! Log in to your Smart Complaint AI account.
+    </p>
 
-        <form id="loginForm">
+    <div class="features">
+        <span class="feature">🤖 AI Classification</span>
+        <span class="feature">⚡ Priority Detection</span>
+        <span class="feature">📊 Smart Routing</span>
+    </div>
 
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input
-                    type="text"
-                    id="username"
-                    placeholder="Enter your username"
-                    required
-                >
-            </div>
+    <!-- LOGIN FORM -->
+    <form id="loginForm">
 
-            <div class="input-group">
-                <label for="password">Password</label>
+        <div class="input-group">
+            <label for="username">Username or Email</label>
+            <input
+                type="text"
+                id="username"
+                placeholder="Enter username or email"
+                required
+            >
+        </div>
+
+        <div class="input-group">
+            <label for="password">Password</label>
+
+            <div class="password-box">
                 <input
                     type="password"
                     id="password"
                     placeholder="Enter your password"
                     required
                 >
+
+                <button
+                    type="button"
+                    class="show-btn"
+                    onclick="togglePassword()"
+                    id="showPasswordBtn"
+                >
+                    Show
+                </button>
             </div>
-
-            <button type="submit">Login</button>
-
-            <p id="error"></p>
-
-        </form>
-
-        <div class="footer">
-            Smart Complaint AI • Student Project
         </div>
 
+        <label class="remember">
+            <input type="checkbox" id="rememberMe">
+            Keep me logged in
+        </label>
+
+        <button type="submit" class="login-btn">
+            Log in
+        </button>
+
+        <p id="error"></p>
+
+    </form>
+
+    <div class="links">
+        <a onclick="forgotUsername()">Forgot username?</a>
+        <a onclick="forgotPassword()">Forgot password?</a>
+        <a onclick="cantLogin()">Can't log in?</a>
     </div>
+
+    <button
+        type="button"
+        class="create-btn"
+        onclick="showRegister()"
+    >
+        Create Account
+    </button>
+
+    <!-- CREATE ACCOUNT -->
+    <div class="register-box" id="registerBox">
+
+        <h2>Create Account</h2>
+
+        <div class="input-group">
+            <label for="fullName">Full Name</label>
+            <input
+                type="text"
+                id="fullName"
+                placeholder="Enter your full name"
+            >
+        </div>
+
+        <div class="input-group">
+            <label for="newUsername">Username or Email</label>
+            <input
+                type="text"
+                id="newUsername"
+                placeholder="Create username or email"
+            >
+        </div>
+
+        <div class="input-group">
+            <label for="newPassword">Password</label>
+            <input
+                type="password"
+                id="newPassword"
+                placeholder="Create password"
+            >
+        </div>
+
+        <div class="input-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Confirm password"
+            >
+        </div>
+
+        <button
+            type="button"
+            class="login-btn"
+            onclick="createAccount()"
+        >
+            Create Account
+        </button>
+
+        <button
+            type="button"
+            class="cancel-btn"
+            onclick="hideRegister()"
+        >
+            Cancel
+        </button>
+
+        <p id="registerError"></p>
+
+    </div>
+
+    <div class="demo">
+        Demo Login: <b>admin</b> / <b>1234</b>
+    </div>
+
+    <div class="footer">
+        Smart Complaint AI • Student Project
+    </div>
+
+</div>
+
+
 <script>
+
+    // LOGIN
     document.getElementById("loginForm").addEventListener("submit", function(event) {
+
         event.preventDefault();
 
-        const username = document.getElementById("username").value.trim();
-        const password = document.getElementById("password").value.trim();
-        const error = document.getElementById("error");
+        const username =
+            document.getElementById("username").value.trim();
 
-       if (username === "admin" && password === "1234") {
-    localStorage.setItem("loggedIn", "true");
-    window.location.href = "index.html";
-}{
-            error.textContent = "Invalid username or password.";
+        const password =
+            document.getElementById("password").value.trim();
+
+        const error =
+            document.getElementById("error");
+
+        const savedUsername =
+            localStorage.getItem("registeredUsername");
+
+        const savedPassword =
+            localStorage.getItem("registeredPassword");
+
+        if (
+            username === "admin" &&
+            password === "1234"
+        ) {
+
+            localStorage.setItem("loggedIn", "true");
+
+            window.location.href = "index.html";
+
         }
+
+        else if (
+            savedUsername &&
+            savedPassword &&
+            username === savedUsername &&
+            password === savedPassword
+        ) {
+
+            localStorage.setItem("loggedIn", "true");
+
+            window.location.href = "index.html";
+
+        }
+
+        else {
+
+            error.textContent =
+                "Invalid username or password.";
+
+        }
+
     });
+
+
+    // SHOW / HIDE PASSWORD
+    function togglePassword() {
+
+        const password =
+            document.getElementById("password");
+
+        const button =
+            document.getElementById("showPasswordBtn");
+
+        if (password.type === "password") {
+
+            password.type = "text";
+
+            button.textContent = "Hide";
+
+        }
+
+        else {
+
+            password.type = "password";
+
+            button.textContent = "Show";
+
+        }
+
+    }
+
+
+    // CREATE ACCOUNT
+    function showRegister() {
+
+        document.getElementById("registerBox").style.display = "block";
+
+    }
+
+
+    function hideRegister() {
+
+        document.getElementById("registerBox").style.display = "none";
+
+        document.getElementById("registerError").textContent = "";
+
+    }
+
+
+    function createAccount() {
+
+        const fullName =
+            document.getElementById("fullName").value.trim();
+
+        const username =
+            document.getElementById("newUsername").value.trim();
+
+        const password =
+            document.getElementById("newPassword").value;
+
+        const confirmPassword =
+            document.getElementById("confirmPassword").value;
+
+        const error =
+            document.getElementById("registerError");
+
+
+        if (!fullName || !username || !password || !confirmPassword) {
+
+            error.textContent =
+                "Please fill in all fields.";
+
+            return;
+
+        }
+
+
+        if (password !== confirmPassword) {
+
+            error.textContent =
+                "Passwords do not match.";
+
+            return;
+
+        }
+
+
+        localStorage.setItem("registeredName", fullName);
+
+        localStorage.setItem("registeredUsername", username);
+
+        localStorage.setItem("registeredPassword", password);
+
+
+        error.style.color = "#16a34a";
+
+        error.textContent =
+            "Account created successfully! You can now log in.";
+
+
+        document.getElementById("fullName").value = "";
+
+        document.getElementById("newUsername").value = "";
+
+        document.getElementById("newPassword").value = "";
+
+        document.getElementById("confirmPassword").value = "";
+
+    }
+
+
+    // SUPPORT LINKS
+    function forgotUsername() {
+
+        alert("Please contact the project administrator to recover your username.");
+
+    }
+
+
+    function forgotPassword() {
+
+        alert("Please contact the project administrator to reset your password.");
+
+    }
+
+
+    function cantLogin() {
+
+        alert("If you cannot log in, check your username and password or contact the project administrator.");
+
+    }
+
 </script>
+
 </body>
 </html>
