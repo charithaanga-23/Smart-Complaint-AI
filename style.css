@@ -1,171 +1,445 @@
-* { box-sizing: border-box; }
-
-:root {
-    --ink: #172033;
-    --muted: #667085;
-    --line: #e5e7eb;
-    --soft: #f6f8fc;
-    --primary: #3157d5;
-    --primary-dark: #2444b0;
-    --white: #ffffff;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #eef3ff, #f8faff);
     min-height: 100vh;
-    font-family: Inter, Segoe UI, Arial, sans-serif;
-    color: var(--ink);
-    background: linear-gradient(135deg, #eef2ff, #f8fafc 55%, #e8f0ff);
+    padding: 35px;
+    color: #172033;
 }
 
-.page { width: min(1050px, 92%); margin: 0 auto; padding: 42px 0; }
 
-.hero {
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    max-width: 1050px;
+    margin: auto;
+    position: relative;
+
     display: flex;
+    align-items: flex-start;
     justify-content: space-between;
+
+    padding-bottom: 30px;
+}
+
+.small-title {
+    color: #3159d5;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 46px;
+    line-height: 1.1;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #7b8495;
+    font-size: 16px;
+}
+
+
+/* =========================
+   AI BOX
+========================= */
+
+.ai-box {
+    width: 75px;
+    height: 75px;
+
+    display: flex;
     align-items: center;
-    gap: 25px;
-    margin-bottom: 24px;
+    justify-content: center;
+
+    margin-right: 80px;
+
+    border-radius: 20px;
+
+    background: linear-gradient(
+        135deg,
+        #3159d5,
+        #6946e8
+    );
+
+    color: white;
+
+    font-size: 25px;
+    font-weight: bold;
+
+    box-shadow:
+        0 12px 25px rgba(49, 89, 213, 0.25);
 }
 
-.eyebrow {
-    color: var(--primary);
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 1.7px;
-}
 
-h1 { margin: 8px 0; font-size: clamp(30px, 5vw, 48px); line-height: 1.05; }
-.hero p { margin: 0; color: var(--muted); max-width: 690px; font-size: 16px; }
+/* =========================
+   LOGOUT
+========================= */
 
-.ai-badge {
-    width: 74px; height: 74px; flex: 0 0 74px;
-    display: grid; place-items: center;
-    border-radius: 22px;
-    color: white; font-weight: 900; font-size: 25px;
-    background: linear-gradient(135deg, #3157d5, #6c63e9);
-    box-shadow: 0 14px 35px rgba(49, 87, 213, .25);
-}
-
-.card {
-    background: rgba(255,255,255,.94);
-    border: 1px solid rgba(255,255,255,.8);
-    border-radius: 25px;
-    padding: 30px;
-    box-shadow: 0 20px 60px rgba(31, 41, 55, .10);
-}
-
-section { margin-bottom: 28px; }
-h2 { margin: 0 0 17px; font-size: 20px; }
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-}
-
-label {
-    display: block;
-    font-weight: 700;
-    font-size: 14px;
-}
-
-input, select, textarea {
-    width: 100%;
-    margin-top: 8px;
-    border: 1px solid var(--line);
-    border-radius: 13px;
-    padding: 13px 14px;
-    background: var(--soft);
-    color: var(--ink);
-    font: inherit;
-    outline: none;
-    transition: .2s;
-}
-
-textarea { resize: vertical; min-height: 135px; }
-input:focus, select:focus, textarea:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(49,87,213,.09);
-    background: white;
-}
-
-.counter { text-align: right; color: #98a2b3; font-size: 12px; margin-top: 6px; }
-
-button {
-    border: 0; border-radius: 13px; padding: 14px 20px;
-    font: inherit; font-weight: 800; cursor: pointer;
-    background: var(--primary); color: white;
-    transition: transform .15s, background .15s;
-}
-
-button:hover { background: var(--primary-dark); transform: translateY(-1px); }
-button:disabled { opacity: .7; cursor: wait; }
-
-.result {
-    border-top: 1px solid var(--line);
-    padding-top: 28px;
-    margin-top: 25px;
-    margin-bottom: 0;
-}
-
-.result-head { display: flex; justify-content: space-between; gap: 20px; align-items: center; }
-.result-head h2 { margin: 6px 0 0; }
-
-.priority {
-    padding: 8px 15px; border-radius: 999px; font-size: 13px; font-weight: 900;
-    background: #eef2ff; color: var(--primary);
-}
-
-.result-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-    margin: 22px 0;
-}
-
-.result-box {
-    padding: 18px; border-radius: 16px; background: var(--soft);
-    border: 1px solid var(--line);
-}
-
-.result-box span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 7px; }
-.result-box strong { font-size: 16px; line-height: 1.35; }
-
-.secondary { background: #eef2ff; color: var(--primary); }
-.secondary:hover { background: #e2e8ff; }
-
-.error { color: #b42318; margin: 14px 0 0; font-weight: 700; }
-.hidden { display: none !important; }
-
-.loader {
-    display: inline-block; width: 15px; height: 15px; margin-left: 7px;
-    border: 2px solid rgba(255,255,255,.45);
-    border-top-color: white; border-radius: 50%;
-    animation: spin .7s linear infinite; vertical-align: middle;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-@media (max-width: 760px) {
-    .page { padding: 25px 0; }
-    .hero { align-items: flex-start; }
-    .ai-badge { width: 58px; height: 58px; flex-basis: 58px; border-radius: 18px; }
-    .card { padding: 20px; }
-    .grid, .result-grid { grid-template-columns: 1fr; }
-}
 .logout-btn {
     position: absolute;
-    top: 20px;
-    right: 25px;
-    padding: 10px 18px;
+    right: -5px;
+    top: -10px;
+
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
+
+    padding: 12px 20px;
+
     background: #ef4444;
     color: white;
+
+    font-size: 14px;
     font-weight: bold;
+
     cursor: pointer;
 }
 
 .logout-btn:hover {
     background: #dc2626;
+}
+
+
+/* =========================
+   MAIN CARD
+========================= */
+
+.main-card {
+    max-width: 1050px;
+    margin: auto;
+
+    background: white;
+
+    border-radius: 25px;
+
+    padding: 35px;
+
+    box-shadow:
+        0 15px 40px rgba(40, 60, 100, 0.08);
+}
+
+
+/* =========================
+   HEADINGS
+========================= */
+
+h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+
+/* =========================
+   CUSTOMER GRID
+========================= */
+
+.customer-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 20px;
+}
+
+
+/* =========================
+   FIELDS
+========================= */
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.field label,
+.complaint-section label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.field input,
+.field select {
+    height: 48px;
+
+    width: 100%;
+
+    padding: 0 15px;
+
+    border: 1px solid #e1e5ed;
+
+    border-radius: 11px;
+
+    background: #f7f8fc;
+
+    font-size: 14px;
+
+    color: #172033;
+}
+
+.field input::placeholder {
+    color: #9299a8;
+}
+
+.field input:focus,
+.field select:focus {
+    outline: none;
+
+    border-color: #3159d5;
+
+    background: white;
+
+    box-shadow:
+        0 0 0 3px rgba(49, 89, 213, 0.08);
+}
+
+
+/* =========================
+   COMPLAINT
+========================= */
+
+.complaint-section {
+    margin-top: 35px;
+}
+
+textarea {
+    width: 100%;
+
+    height: 140px;
+
+    resize: vertical;
+
+    padding: 18px;
+
+    border: 1px solid #e1e5ed;
+
+    border-radius: 12px;
+
+    background: #f7f8fc;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 14px;
+}
+
+textarea:focus {
+    outline: none;
+
+    border-color: #3159d5;
+
+    background: white;
+}
+
+
+/* =========================
+   CHARACTER COUNTER
+========================= */
+
+.counter {
+    text-align: right;
+
+    color: #8d95a5;
+
+    font-size: 12px;
+
+    margin-top: 6px;
+}
+
+
+/* =========================
+   ANALYZE BUTTON
+========================= */
+
+.analyze-btn {
+    margin-top: 28px;
+
+    padding: 14px 22px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: linear-gradient(
+        135deg,
+        #3159d5,
+        #3d5fda
+    );
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.analyze-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(49, 89, 213, 0.25);
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+#error {
+    color: #dc2626;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+
+/* =========================
+   AI RESULT SECTION
+========================= */
+
+.result-section {
+    margin-top: 35px;
+    padding-top: 30px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.result-card {
+    background: #f7f8fc;
+    border: 1px solid #e1e5ed;
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.result-card h3,
+.response-card h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #64748b;
+}
+
+.result-card p {
+    font-size: 17px;
+    font-weight: bold;
+    color: #3159d5;
+}
+
+.response-card {
+    margin-top: 18px;
+    padding: 20px;
+
+    background: #f7f8fc;
+
+    border: 1px solid #e1e5ed;
+
+    border-radius: 14px;
+}
+
+.response-card p {
+    color: #334155;
+    line-height: 1.6;
+}
+
+.new-complaint-btn {
+    margin-top: 20px;
+
+    padding: 13px 20px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #172033;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.new-complaint-btn:hover {
+    opacity: 0.9;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 900px) {
+
+    body {
+        padding: 20px;
+    }
+
+    .customer-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .result-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+    h1 {
+        font-size: 36px;
+    }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .customer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header {
+        flex-direction: column;
+    }
+
+    .ai-box {
+        display: none;
+    }
+
+    .logout-btn {
+        position: static;
+        margin-top: 15px;
+    }
+
+    h1 {
+        font-size: 30px;
+    }
+
+    .main-card {
+        padding: 22px;
+    }
 }
