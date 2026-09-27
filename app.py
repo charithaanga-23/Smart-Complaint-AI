@@ -333,12 +333,16 @@ def index_page():
         ".",
         "index.html"
     )
+@app.route("/style.css")
+def style_css():
+    return send_from_directory(".", "style.css")
 
-
+@app.route("/script.js")
+def script_js():
+    return send_from_directory(".", "script.js")
 # ============================================================
 # PREDICTION API
 # ============================================================
-
 @app.post("/predict")
 def predict():
 
