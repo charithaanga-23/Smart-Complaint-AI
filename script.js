@@ -7,10 +7,6 @@ const errorBox = document.getElementById("error");
 const resultSection = document.getElementById("result");
 
 
-// ===============================
-// ANALYZE COMPLAINT
-// ===============================
-
 form.addEventListener("submit", async function (event) {
 
     event.preventDefault();
@@ -21,76 +17,208 @@ form.addEventListener("submit", async function (event) {
     submitBtn.textContent = "Analyzing...";
 
 
-    // Get values from the new frontend
-    const data = {
+    // --------------------------------------------------
+    // COLLECT FORM DATA
+    // --------------------------------------------------
 
-        gender:
-            document.getElementById("gender").value,
+    const customerName =
+        document.getElementById("customerName").value.trim();
 
-        age:
-            Number(document.getElementById("age").value),
+    const phoneNumber =
+        document.getElementById("phoneNumber").value.trim();
 
-        product_category:
-            document.getElementById("product_category").value,
+    const preferenceId =
+        document.getElementById("preferenceId").value.trim();
 
-        complaint_text:
-            document.getElementById("complaint_text").value.trim()
+    const gender =
+        document.getElementById("gender").value;
 
-    };
+    const age =
+        Number(document.getElementById("age").value);
+
+    const productCategory =
+        document.getElementById("product_category").value;
+
+    const complaintText =
+        document.getElementById("complaint_text").value.trim();
 
 
-    // Basic validation
-    if (!data.gender) {
+    // --------------------------------------------------
+    // NAME VALIDATION
+    // --------------------------------------------------
+
+    if (!customerName) {
+
+        errorBox.textContent =
+            "Please enter your name.";
+
+        resetButton();
+        return;
+    }
+
+
+    if (customerName.length < 2) {
+
+        errorBox.textContent =
+            "Please enter a valid name.";
+
+        resetButton();
+        return;
+    }
+
+
+    // --------------------------------------------------
+    // PHONE VALIDATION
+    // --------------------------------------------------
+
+    if (!phoneNumber) {
+
+        errorBox.textContent =
+            "Please enter your phone number.";
+
+        resetButton();
+        return;
+    }
+
+
+    const cleanPhone =
+        phoneNumber.replace(/[\s\-()]/g, "");
+
+
+    if (!/^\+?[0-9]{7,15}$/.test(cleanPhone)) {
+
+        errorBox.textContent =
+            "Please enter a valid phone number.";
+
+        resetButton();
+        return;
+    }
+
+
+    // --------------------------------------------------
+    // AGE VALIDATION
+    // --------------------------------------------------
+
+    if (!age) {
+
+        errorBox.textContent =
+            "Please enter your age.";
+
+        resetButton();
+        return;
+    }
+
+
+    if (age < 18) {
+
+        errorBox.textContent =
+            "Only customers aged 18 or above can submit a complaint.";
+
+        resetButton();
+        return;
+    }
+
+
+    if (age > 120) {
+
+        errorBox.textContent =
+            "Please enter a valid age.";
+
+        resetButton();
+        return;
+    }
+
+
+    // --------------------------------------------------
+    // GENDER
+    // --------------------------------------------------
+
+    if (!gender) {
 
         errorBox.textContent =
             "Please select gender.";
 
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Analyze Complaint";
-
+        resetButton();
         return;
     }
 
 
-    if (!data.age) {
+    // --------------------------------------------------
+    // PRODUCT CATEGORY
+    // --------------------------------------------------
 
-        errorBox.textContent =
-            "Please enter age.";
-
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Analyze Complaint";
-
-        return;
-    }
-
-
-    if (!data.product_category) {
+    if (!productCategory) {
 
         errorBox.textContent =
             "Please select product category.";
 
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Analyze Complaint";
-
+        resetButton();
         return;
     }
 
 
-    if (!data.complaint_text) {
+    // --------------------------------------------------
+    // COMPLAINT
+    // --------------------------------------------------
+
+    if (!complaintText) {
 
         errorBox.textContent =
             "Please enter your complaint.";
 
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Analyze Complaint";
-
+        resetButton();
         return;
     }
 
 
+    if (complaintText.length < 5) {
+
+        errorBox.textContent =
+            "Please provide a more detailed complaint.";
+
+        resetButton();
+        return;
+    }
+
+
+    if (complaintText.length > 1000) {
+
+        errorBox.textContent =
+            "Complaint must be 1000 characters or less.";
+
+        resetButton();
+        return;
+    }
+
+
+    // --------------------------------------------------
+    // DATA SENT TO FLASK
+    // --------------------------------------------------
+
+    const data = {
+
+        customer_name: customerName,
+
+        phone_number: phoneNumber,
+
+        preference_id: preferenceId,
+
+        gender: gender,
+
+        age: age,
+
+        product_category: productCategory,
+
+        complaint_text: complaintText
+    };
+
+
+    // --------------------------------------------------
+    // SEND TO BACKEND
+    // --------------------------------------------------
+
     try {
 
-        // Send complaint to Flask backend
         const response = await fetch(API_URL, {
 
             method: "POST",
@@ -100,77 +228,99 @@ form.addEventListener("submit", async function (event) {
             },
 
             body: JSON.stringify(data)
-
         });
 
 
-        const result = await response.json();
+        const result =
+            await response.json();
 
+
+        // Backend error
 
         if (!response.ok) {
 
             throw new Error(
                 result.error || "Backend error"
             );
-
         }
 
 
-        // Display AI results
+        // ------------------------------------------------
+        // DISPLAY AI RESULT
+        // ------------------------------------------------
+
         document.getElementById("category").textContent =
             result.complaint_category;
+
 
         document.getElementById("priority").textContent =
             result.priority;
 
+
         document.getElementById("department").textContent =
             result.department;
+
 
         document.getElementById("response").textContent =
             result.suggested_response;
 
 
-        // Show results
         resultSection.classList.remove("hidden");
 
 
-        // Scroll to results
+        // Scroll to result
+
         resultSection.scrollIntoView({
+
             behavior: "smooth",
+
             block: "start"
+
         });
 
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         errorBox.textContent =
             "Error: " + error.message;
-
     }
 
 
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Analyze Complaint";
+    resetButton();
 
 });
 
 
-// ===============================
-// ANALYZE ANOTHER COMPLAINT
-// ===============================
+// ------------------------------------------------------
+// RESET BUTTON
+// ------------------------------------------------------
+
+function resetButton() {
+
+    submitBtn.disabled = false;
+
+    submitBtn.textContent =
+        "Analyze Complaint";
+}
+
+
+// ------------------------------------------------------
+// NEW COMPLAINT
+// ------------------------------------------------------
 
 document
     .getElementById("newComplaint")
     .addEventListener("click", function () {
 
-        // Clear all form fields
+
         document.getElementById("customerName").value = "";
+
         document.getElementById("phoneNumber").value = "";
+
         document.getElementById("preferenceId").value = "";
 
         document.getElementById("gender").value = "";
+
         document.getElementById("age").value = "";
 
         document.getElementById("product_category").value = "";
@@ -178,27 +328,36 @@ document
         document.getElementById("complaint_text").value = "";
 
 
-        // Reset character counter
+        // Character counter
+
         const count =
             document.getElementById("count");
 
+
         if (count) {
+
             count.textContent = "0";
         }
 
 
-        // Hide previous result
+        // Hide result
+
         resultSection.classList.add("hidden");
 
 
         // Clear error
+
         errorBox.textContent = "";
 
 
         // Scroll to top
+
         window.scrollTo({
+
             top: 0,
+
             behavior: "smooth"
+
         });
 
     });
