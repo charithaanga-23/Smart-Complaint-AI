@@ -3,14 +3,11 @@ from flask_cors import CORS
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import FeatureUnion, Pipeline
+from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FeatureUnion
 
-import os
+import re
 
-
-# ============================================================
-# FLASK SETUP
-# ============================================================
 
 app = Flask(__name__)
 CORS(app)
@@ -20,218 +17,249 @@ CORS(app)
 # TRAINING DATA
 # ============================================================
 
-TRAINING_DATA = [
+TRAINING_DATA = {
 
-    # ---------------- BATTERY ----------------
-    ("phone battery drains very quickly", "Battery Issue"),
-    ("mobile battery is draining fast", "Battery Issue"),
-    ("battery dies quickly", "Battery Issue"),
-    ("battery does not last long", "Battery Issue"),
-    ("phone battery charge is reducing quickly", "Battery Issue"),
-    ("laptop battery drains very fast", "Battery Issue"),
-    ("device battery is not working properly", "Battery Issue"),
-    ("battery percentage drops quickly", "Battery Issue"),
-    ("phone battery problem", "Battery Issue"),
-    ("battery is not holding charge", "Battery Issue"),
+    "Battery Issue": [
+        "battery drains quickly",
+        "battery draining very fast",
+        "phone battery dies quickly",
+        "laptop battery drains",
+        "battery backup is poor",
+        "battery does not last",
+        "battery percentage drops quickly",
+        "my battery is getting weak",
+        "phone battery problem",
+        "battery is not working properly"
+    ],
 
-    # ---------------- CHARGING ----------------
-    ("phone is not charging", "Charging Issue"),
-    ("mobile won't charge", "Charging Issue"),
-    ("charger is not working", "Charging Issue"),
-    ("charging stopped working", "Charging Issue"),
-    ("phone charging very slowly", "Charging Issue"),
-    ("device does not charge properly", "Charging Issue"),
-    ("charging cable is not working", "Charging Issue"),
-    ("laptop is not charging", "Charging Issue"),
-    ("charging port problem", "Charging Issue"),
+    "Charging Issue": [
+        "phone is not charging",
+        "charger is not working",
+        "charging stopped",
+        "device charges very slowly",
+        "charging port is not working",
+        "mobile is not taking charge",
+        "charger problem",
+        "charging cable is not working",
+        "laptop is not charging",
+        "charging issue"
+    ],
 
-    # ---------------- SCREEN ----------------
-    ("phone screen is broken", "Screen/Display Issue"),
-    ("mobile screen is cracked", "Screen/Display Issue"),
-    ("display is cracked", "Screen/Display Issue"),
-    ("screen is not working", "Screen/Display Issue"),
-    ("screen has black lines", "Screen/Display Issue"),
-    ("phone display colour is dull", "Screen/Display Issue"),
-    ("phone screen colour is faded", "Screen/Display Issue"),
-    ("mobile display looks dull", "Screen/Display Issue"),
-    ("screen colours are not clear", "Screen/Display Issue"),
-    ("display colours look washed out", "Screen/Display Issue"),
-    ("phone screen looks faded", "Screen/Display Issue"),
-    ("screen brightness is low", "Screen/Display Issue"),
-    ("phone screen is dim", "Screen/Display Issue"),
-    ("display is flickering", "Screen/Display Issue"),
-    ("phone screen is flickering", "Screen/Display Issue"),
-    ("touch screen is not working", "Screen/Display Issue"),
-    ("phone display is too dark", "Screen/Display Issue"),
-    ("screen colour has changed", "Screen/Display Issue"),
-    ("phone display problem", "Screen/Display Issue"),
+    "Screen/Display Issue": [
+        "screen is broken",
+        "display is cracked",
+        "screen is not working",
+        "display is black",
+        "screen has lines",
+        "screen is flickering",
+        "display is damaged",
+        "touch screen is not working",
+        "phone screen problem",
+        "screen colour is changing",
+        "screen colour is dull",
+        "display colour is dull",
+        "screen brightness problem"
+    ],
 
-    # ---------------- HARDWARE ----------------
-    ("motherboard is damaged", "Hardware Issue"),
-    ("computer motherboard not working", "Hardware Issue"),
-    ("system board failure", "Hardware Issue"),
-    ("laptop motherboard issue", "Hardware Issue"),
-    ("keyboard is not working", "Hardware Issue"),
-    ("mouse is not working", "Hardware Issue"),
-    ("usb port is damaged", "Hardware Issue"),
-    ("device hardware is broken", "Hardware Issue"),
-    ("laptop hardware problem", "Hardware Issue"),
-    ("computer hardware problem", "Hardware Issue"),
+    "Hardware Issue": [
+        "motherboard is damaged",
+        "motherboard is not working",
+        "hardware is damaged",
+        "laptop hardware problem",
+        "computer hardware failure",
+        "device is physically damaged",
+        "keyboard is not working",
+        "mouse is not working",
+        "speaker is not working",
+        "hardware problem"
+    ],
 
-    # ---------------- SOFTWARE ----------------
-    ("application keeps crashing", "Software Issue"),
-    ("app crashes every time", "Software Issue"),
-    ("software is not working", "Software Issue"),
-    ("phone software has a problem", "Software Issue"),
-    ("application is not opening", "Software Issue"),
-    ("program keeps freezing", "Software Issue"),
-    ("system software error", "Software Issue"),
-    ("website is not working", "Software Issue"),
-    ("app is stuck", "Software Issue"),
-    ("software problem", "Software Issue"),
+    "Software Issue": [
+        "software is not working",
+        "application keeps crashing",
+        "app crashes",
+        "phone software problem",
+        "system is freezing",
+        "computer is freezing",
+        "software error",
+        "operating system problem",
+        "application is not opening",
+        "app is not responding"
+    ],
 
-    # ---------------- INTERNET / CONNECTIVITY ----------------
-    ("internet connection is not working", "Connectivity Issue"),
-    ("wifi keeps disconnecting", "Connectivity Issue"),
-    ("wifi is not working", "Connectivity Issue"),
-    ("network problem", "Connectivity Issue"),
-    ("unable to connect to internet", "Connectivity Issue"),
-    ("mobile data is not working", "Connectivity Issue"),
-    ("bluetooth is not connecting", "Connectivity Issue"),
-    ("internet is very slow", "Connectivity Issue"),
-    ("network keeps dropping", "Connectivity Issue"),
-    ("cannot connect to wifi", "Connectivity Issue"),
+    "Connectivity Issue": [
+        "internet is not working",
+        "wifi is not working",
+        "wifi keeps disconnecting",
+        "network problem",
+        "cannot connect to internet",
+        "bluetooth is not working",
+        "mobile network problem",
+        "internet connection is slow",
+        "network keeps disconnecting",
+        "connection problem"
+    ],
 
-    # ---------------- DAMAGED PRODUCT ----------------
-    ("product arrived damaged", "Damaged Product"),
-    ("item was broken during delivery", "Damaged Product"),
-    ("received damaged product", "Damaged Product"),
-    ("package is damaged", "Damaged Product"),
-    ("product is broken", "Damaged Product"),
-    ("item arrived broken", "Damaged Product"),
-    ("box was damaged", "Damaged Product"),
-    ("product was damaged when delivered", "Damaged Product"),
+    "Damaged Product": [
+        "product arrived damaged",
+        "item was broken when delivered",
+        "package arrived damaged",
+        "received damaged product",
+        "product was damaged during delivery",
+        "box was damaged",
+        "item is broken",
+        "product is physically damaged"
+    ],
 
-    # ---------------- WRONG PRODUCT ----------------
-    ("wrong product was delivered", "Wrong Product"),
-    ("received the wrong item", "Wrong Product"),
-    ("incorrect product delivered", "Wrong Product"),
-    ("this is not what I ordered", "Wrong Product"),
-    ("I received a different product", "Wrong Product"),
-    ("wrong item received", "Wrong Product"),
-    ("order contains the wrong product", "Wrong Product"),
+    "Wrong Product": [
+        "wrong product delivered",
+        "received wrong item",
+        "incorrect product delivered",
+        "this is not what i ordered",
+        "different product received",
+        "wrong item received",
+        "order contains wrong product"
+    ],
 
-    # ---------------- REFUND ----------------
-    ("refund has not arrived", "Refund Issue"),
-    ("money has not been refunded", "Refund Issue"),
-    ("refund is delayed", "Refund Issue"),
-    ("I want a refund", "Refund Issue"),
-    ("order was cancelled but refund is missing", "Refund Issue"),
-    ("refund not received", "Refund Issue"),
-    ("where is my refund", "Refund Issue"),
-    ("refund money is missing", "Refund Issue"),
+    "Refund Issue": [
+        "refund has not arrived",
+        "refund is delayed",
+        "money has not been refunded",
+        "i have not received my refund",
+        "refund problem",
+        "refund pending",
+        "where is my refund",
+        "cancelled order refund missing"
+    ],
 
-    # ---------------- PAYMENT ----------------
-    ("payment failed", "Payment Issue"),
-    ("payment was declined", "Payment Issue"),
-    ("money was deducted but order failed", "Payment Issue"),
-    ("I was charged twice", "Payment Issue"),
-    ("payment problem", "Payment Issue"),
-    ("card payment is not working", "Payment Issue"),
-    ("online payment failed", "Payment Issue"),
-    ("money was deducted incorrectly", "Payment Issue"),
+    "Payment Issue": [
+        "payment failed",
+        "payment was declined",
+        "money was deducted",
+        "payment problem",
+        "payment is not going through",
+        "charged twice",
+        "double payment",
+        "transaction failed",
+        "money deducted but order failed"
+    ],
 
-    # ---------------- DELIVERY ----------------
-    ("delivery is late", "Delivery Delay"),
-    ("order has not arrived", "Delivery Delay"),
-    ("package delivery delayed", "Delivery Delay"),
-    ("delivery is taking too long", "Delivery Delay"),
-    ("my order is delayed", "Delivery Delay"),
-    ("where is my package", "Delivery Delay"),
-    ("package has not arrived", "Delivery Delay"),
-    ("order has not been delivered", "Delivery Delay"),
+    "Delivery Delay": [
+        "delivery is late",
+        "order has not arrived",
+        "package is delayed",
+        "delivery is taking too long",
+        "my order is late",
+        "package has not arrived",
+        "shipment is delayed",
+        "delivery delay"
+    ],
 
-    # ---------------- CANCELLATION ----------------
-    ("I want to cancel my order", "Order Cancellation"),
-    ("cancel my purchase", "Order Cancellation"),
-    ("I need to cancel the order", "Order Cancellation"),
-    ("please cancel my order", "Order Cancellation"),
-    ("how can I cancel my order", "Order Cancellation"),
+    "Order Cancellation": [
+        "i want to cancel my order",
+        "cancel my order",
+        "please cancel the order",
+        "order cancellation",
+        "i need to cancel my purchase",
+        "how can i cancel my order"
+    ],
 
-    # ---------------- REPLACEMENT ----------------
-    ("I want a replacement", "Replacement Request"),
-    ("please replace this product", "Replacement Request"),
-    ("I need a new product", "Replacement Request"),
-    ("can you replace my item", "Replacement Request"),
-    ("product replacement required", "Replacement Request"),
+    "Replacement Request": [
+        "i want a replacement",
+        "please replace my product",
+        "replace the damaged item",
+        "i need a new product",
+        "requesting replacement",
+        "can you replace this item",
+        "product replacement"
+    ],
 
-    # ---------------- WARRANTY ----------------
-    ("I want to claim warranty", "Warranty Issue"),
-    ("product is under warranty", "Warranty Issue"),
-    ("warranty claim problem", "Warranty Issue"),
-    ("how can I use my warranty", "Warranty Issue"),
-    ("warranty service required", "Warranty Issue"),
+    "Warranty Issue": [
+        "product is under warranty",
+        "warranty claim",
+        "warranty problem",
+        "i want to claim warranty",
+        "is my product covered by warranty",
+        "warranty service required"
+    ],
 
-    # ---------------- PRODUCT QUALITY ----------------
-    ("product quality is poor", "Product Quality Issue"),
-    ("bad quality product", "Product Quality Issue"),
-    ("quality is not as expected", "Product Quality Issue"),
-    ("product quality is disappointing", "Product Quality Issue"),
-    ("material quality is poor", "Product Quality Issue"),
-    ("product does not look good", "Product Quality Issue"),
-    ("item quality is bad", "Product Quality Issue"),
-    ("poor quality item", "Product Quality Issue"),
+    "Product Quality Issue": [
+        "product quality is poor",
+        "bad quality product",
+        "quality is not good",
+        "product is not as expected",
+        "poor quality",
+        "quality problem",
+        "product quality issue"
+    ],
 
-    # ---------------- ACCOUNT / LOGIN ----------------
-    ("I cannot login", "Account/Login Issue"),
-    ("unable to login", "Account/Login Issue"),
-    ("my account is not working", "Account/Login Issue"),
-    ("password is not working", "Account/Login Issue"),
-    ("I cannot access my account", "Account/Login Issue"),
-    ("login problem", "Account/Login Issue"),
-    ("account access problem", "Account/Login Issue"),
+    "Account/Login Issue": [
+        "cannot login",
+        "login is not working",
+        "forgot password",
+        "account is locked",
+        "cannot access my account",
+        "login problem",
+        "password is not working",
+        "account access problem"
+    ],
 
-    # ---------------- CUSTOMER SERVICE ----------------
-    ("customer service is not responding", "Customer Service Issue"),
-    ("support team is not helping", "Customer Service Issue"),
-    ("I cannot contact customer support", "Customer Service Issue"),
-    ("customer care is not responding", "Customer Service Issue"),
-    ("support is taking too long", "Customer Service Issue"),
+    "Customer Service Issue": [
+        "customer service was not helpful",
+        "support team did not help",
+        "customer care is not responding",
+        "support is poor",
+        "nobody responded to my complaint",
+        "customer service problem"
+    ],
 
-    # ---------------- SUBSCRIPTION ----------------
-    ("subscription problem", "Subscription Issue"),
-    ("I want to cancel my subscription", "Subscription Issue"),
-    ("subscription payment problem", "Subscription Issue"),
-    ("subscription renewed unexpectedly", "Subscription Issue"),
-    ("subscription is not working", "Subscription Issue"),
+    "Subscription Issue": [
+        "subscription problem",
+        "cancel my subscription",
+        "subscription is not working",
+        "subscription charged me",
+        "subscription renewal problem",
+        "membership issue"
+    ],
 
-    # ---------------- PRIVACY / SECURITY ----------------
-    ("someone accessed my account", "Security Issue"),
-    ("my account was hacked", "Security Issue"),
-    ("I see suspicious activity", "Security Issue"),
-    ("security problem with my account", "Security Issue"),
-    ("unauthorized account access", "Security Issue"),
+    "Security Issue": [
+        "someone accessed my account",
+        "account security problem",
+        "unauthorized transaction",
+        "someone used my account",
+        "security problem",
+        "suspicious activity",
+        "my account was hacked"
+    ],
 
-    # ---------------- GENERAL PRODUCT COMPLAINTS ----------------
-    ("product stopped working", "General Product Complaint"),
-    ("I am unhappy with the product", "General Product Complaint"),
-    ("I have a problem with my product", "General Product Complaint"),
-    ("there is a problem with my order", "General Product Complaint"),
-    ("product is not satisfactory", "General Product Complaint"),
-    ("I am not satisfied with my purchase", "General Product Complaint"),
-]
-
-
-TRAINING_TEXTS = [item[0] for item in TRAINING_DATA]
-TRAINING_LABELS = [item[1] for item in TRAINING_DATA]
+    "General Product Complaint": [
+        "product is not working properly",
+        "i am unhappy with the product",
+        "problem with my product",
+        "issue with the item",
+        "product problem",
+        "item is not satisfactory"
+    ]
+}
 
 
 # ============================================================
-# MACHINE LEARNING MODEL
+# CREATE TRAINING DATA
 # ============================================================
 
-# Word features understand words and phrases.
-# Character features help with spelling variations and unusual wording.
+TRAINING_TEXTS = []
+TRAINING_LABELS = []
+
+for category, complaints in TRAINING_DATA.items():
+
+    for complaint in complaints:
+        TRAINING_TEXTS.append(complaint)
+        TRAINING_LABELS.append(category)
+
+
+# ============================================================
+# AI MODEL
+# ============================================================
 
 features = FeatureUnion([
     (
@@ -242,8 +270,9 @@ features = FeatureUnion([
             sublinear_tf=True
         )
     ),
+
     (
-        "char_tfidf",
+        "character_tfidf",
         TfidfVectorizer(
             lowercase=True,
             analyzer="char_wb",
@@ -256,6 +285,7 @@ features = FeatureUnion([
 
 model = Pipeline([
     ("features", features),
+
     (
         "classifier",
         LogisticRegression(
@@ -270,7 +300,7 @@ model.fit(TRAINING_TEXTS, TRAINING_LABELS)
 
 
 # ============================================================
-# DEPARTMENT MAPPING
+# DEPARTMENTS
 # ============================================================
 
 DEPARTMENT_MAP = {
@@ -309,7 +339,7 @@ DEPARTMENT_MAP = {
         "Logistics & Delivery",
 
     "Order Cancellation":
-        "Order Management",
+        "Orders & Customer Care",
 
     "Replacement Request":
         "Returns & Replacement",
@@ -324,90 +354,16 @@ DEPARTMENT_MAP = {
         "Account Support",
 
     "Customer Service Issue":
-        "Customer Support",
+        "Customer Care",
 
     "Subscription Issue":
-        "Billing & Payments",
+        "Subscription Support",
 
     "Security Issue":
-        "Account Security",
+        "Security Support",
 
     "General Product Complaint":
-        "Customer Support",
-
-    "General Complaint":
         "Customer Support"
-}
-
-
-# ============================================================
-# RESPONSE MAPPING
-# ============================================================
-
-RESPONSE_MAP = {
-
-    "Battery Issue":
-        "Please inspect the battery and device power system. Our technical team should review the issue.",
-
-    "Charging Issue":
-        "Please check the charger, cable and charging port. Our technical team can assist with further inspection.",
-
-    "Screen/Display Issue":
-        "Please arrange a display inspection and replacement assessment.",
-
-    "Hardware Issue":
-        "Please arrange a technical inspection. The hardware support team should review the device.",
-
-    "Software Issue":
-        "Please provide the device and software details so our technical team can investigate the software issue.",
-
-    "Connectivity Issue":
-        "Please check the network settings and connection status. Our technical support team can assist further.",
-
-    "Damaged Product":
-        "Please provide the order details and photos of the damage so the returns team can arrange a resolution.",
-
-    "Wrong Product":
-        "Please verify the order and delivered item so the returns team can arrange the correct product.",
-
-    "Refund Issue":
-        "Please verify the payment and refund transaction with the billing team.",
-
-    "Payment Issue":
-        "Please verify the payment transaction with the billing team and provide the transaction details if required.",
-
-    "Delivery Delay":
-        "Please verify the shipment status and provide the latest delivery update.",
-
-    "Order Cancellation":
-        "Please verify the order details so the order management team can check the cancellation request.",
-
-    "Replacement Request":
-        "Please provide the order and product details so the returns team can process the replacement request.",
-
-    "Warranty Issue":
-        "Please provide the product and purchase details so the warranty team can verify the warranty claim.",
-
-    "Product Quality Issue":
-        "Please review the product quality concern and route it to customer care for resolution.",
-
-    "Account/Login Issue":
-        "Please verify your account details and contact account support for assistance with login or account access.",
-
-    "Customer Service Issue":
-        "Your complaint has been routed to customer support for further assistance.",
-
-    "Subscription Issue":
-        "Please verify the subscription and billing details so the support team can investigate the issue.",
-
-    "Security Issue":
-        "Please secure the account and route the complaint to the account security team for investigation.",
-
-    "General Product Complaint":
-        "Please provide the order and product details so our customer support team can investigate the complaint.",
-
-    "General Complaint":
-        "Thank you for reporting the issue. Our customer support team should review the complaint and provide an appropriate resolution."
 }
 
 
@@ -415,7 +371,7 @@ RESPONSE_MAP = {
 # PRIORITY
 # ============================================================
 
-HIGH_PRIORITY_CATEGORIES = {
+HIGH_PRIORITY = {
     "Battery Issue",
     "Charging Issue",
     "Hardware Issue",
@@ -424,38 +380,31 @@ HIGH_PRIORITY_CATEGORIES = {
 }
 
 
-MEDIUM_PRIORITY_CATEGORIES = {
-    "Connectivity Issue",
+MEDIUM_PRIORITY = {
     "Damaged Product",
     "Wrong Product",
     "Refund Issue",
     "Payment Issue",
-    "Warranty Issue",
+    "Connectivity Issue",
     "Replacement Request",
-    "Account/Login Issue",
-    "Subscription Issue"
+    "Warranty Issue"
 }
 
 
 URGENT_WORDS = [
     "fire",
     "smoke",
-    "burning",
     "burn",
+    "burning",
     "explosion",
     "electric shock",
-    "shock",
+    "electricity",
     "sparking",
     "spark",
     "overheating",
     "overheated",
     "danger",
-    "dangerous",
-    "unsafe",
-    "injury",
-    "injured",
-    "hacked",
-    "stolen"
+    "dangerous"
 ]
 
 
@@ -463,67 +412,198 @@ def get_priority(category, complaint):
 
     text = complaint.lower()
 
-    # Safety/security related words override normal category priority.
-    for word in URGENT_WORDS:
-        if word in text:
-            return "High"
-
-    if category in HIGH_PRIORITY_CATEGORIES:
+    if any(word in text for word in URGENT_WORDS):
         return "High"
 
-    if category in MEDIUM_PRIORITY_CATEGORIES:
+    if category in HIGH_PRIORITY:
+        return "High"
+
+    if category in MEDIUM_PRIORITY:
         return "Medium"
 
     return "Low"
 
 
 # ============================================================
-# CATEGORY PREDICTION
+# COMPLAINT-SPECIFIC RESPONSE
 # ============================================================
 
-def predict_category(complaint):
+def generate_response(category, complaint):
 
-    probabilities = model.predict_proba([complaint])[0]
+    text = complaint.lower()
 
-    best_index = probabilities.argmax()
+    if category == "Battery Issue":
+        return (
+            "We identified a battery-related complaint. "
+            "Please have the device and battery checked by the technical team. "
+            "If the device is overheating or showing unusual battery behavior, "
+            "stop using it and request technical assistance."
+        )
 
-    category = model.classes_[best_index]
+    if category == "Charging Issue":
+        return (
+            "We identified a charging-related complaint. "
+            "Please check the charger, charging cable and charging port. "
+            "If the issue continues, the technical team should inspect the device."
+        )
 
-    confidence = probabilities[best_index]
+    if category == "Screen/Display Issue":
+        return (
+            "We identified a screen or display complaint. "
+            "Please arrange a display inspection. "
+            "The technical team can determine whether repair or replacement is required."
+        )
 
-    # If the model is uncertain, don't force an unrelated category.
-    if confidence < 0.32:
-        return "General Complaint", confidence
+    if category == "Hardware Issue":
+        return (
+            "We identified a hardware-related complaint. "
+            "Please arrange a technical inspection so the hardware team can "
+            "identify the affected component and recommend a suitable solution."
+        )
 
-    return category, confidence
+    if category == "Software Issue":
+        return (
+            "We identified a software-related complaint. "
+            "Please check for available software updates and restart the device. "
+            "If the problem continues, technical support should investigate it."
+        )
+
+    if category == "Connectivity Issue":
+        return (
+            "We identified a connectivity-related complaint. "
+            "Please check your network settings and connection. "
+            "If the issue continues, technical support should investigate the connection."
+        )
+
+    if category == "Damaged Product":
+        return (
+            "We identified a damaged-product complaint. "
+            "Please provide the order details and available product/delivery evidence "
+            "so the returns team can review replacement or resolution options."
+        )
+
+    if category == "Wrong Product":
+        return (
+            "We identified a wrong-product complaint. "
+            "Please verify the order details and delivered item. "
+            "The returns team can review the order and arrange the appropriate resolution."
+        )
+
+    if category == "Refund Issue":
+        return (
+            "We identified a refund-related complaint. "
+            "Please verify the order and payment details. "
+            "The billing team should check the refund transaction and provide an update."
+        )
+
+    if category == "Payment Issue":
+        return (
+            "We identified a payment-related complaint. "
+            "Please verify the transaction details. "
+            "The billing team should check the payment status and resolve the issue."
+        )
+
+    if category == "Delivery Delay":
+        return (
+            "We identified a delivery-delay complaint. "
+            "Please provide the order details so the logistics team can check "
+            "the latest shipment status and delivery information."
+        )
+
+    if category == "Order Cancellation":
+        return (
+            "We identified an order-cancellation request. "
+            "The orders team should verify the order status and process the "
+            "cancellation according to the applicable order policy."
+        )
+
+    if category == "Replacement Request":
+        return (
+            "We identified a replacement request. "
+            "Please provide the order and product details so the returns team "
+            "can review replacement eligibility."
+        )
+
+    if category == "Warranty Issue":
+        return (
+            "We identified a warranty-related complaint. "
+            "Please provide the purchase and product details so the warranty "
+            "team can verify coverage and guide you through the next steps."
+        )
+
+    if category == "Product Quality Issue":
+        return (
+            "We identified a product-quality complaint. "
+            "Please provide the product and order details so the quality and "
+            "customer-care team can investigate the concern."
+        )
+
+    if category == "Account/Login Issue":
+        return (
+            "We identified an account or login complaint. "
+            "Please verify your login details and use the account recovery "
+            "options if necessary. Account support should assist if access remains unavailable."
+        )
+
+    if category == "Customer Service Issue":
+        return (
+            "We identified a customer-service complaint. "
+            "The customer-care team should review the previous interaction "
+            "and provide an appropriate follow-up."
+        )
+
+    if category == "Subscription Issue":
+        return (
+            "We identified a subscription-related complaint. "
+            "Please verify the subscription and payment details so the "
+            "subscription support team can review the issue."
+        )
+
+    if category == "Security Issue":
+        return (
+            "We identified a security-related complaint. "
+            "Please secure the account and report the suspicious activity "
+            "to the security support team for investigation."
+        )
+
+    return (
+        "Your complaint could not be confidently assigned to a specific category. "
+        "It has been routed to Customer Support for manual review so the appropriate "
+        "team can investigate the issue."
+    )
 
 
 # ============================================================
-# FRONTEND ROUTES
+# ROUTES FOR FRONTEND FILES
 # ============================================================
 
 @app.get("/")
 def home():
+
     return send_from_directory(".", "login.html")
 
 
 @app.get("/login.html")
 def login_page():
+
     return send_from_directory(".", "login.html")
 
 
 @app.get("/index.html")
 def index_page():
+
     return send_from_directory(".", "index.html")
 
 
 @app.get("/style.css")
 def style_css():
+
     return send_from_directory(".", "style.css")
 
 
 @app.get("/script.js")
 def script_js():
+
     return send_from_directory(".", "script.js")
 
 
@@ -537,12 +617,19 @@ def predict():
     data = request.get_json(silent=True)
 
     if not data:
+
         return jsonify({
             "error": "No JSON data received."
         }), 400
 
 
+    # --------------------------------------------------------
+    # REQUIRED FIELDS
+    # --------------------------------------------------------
+
     required_fields = [
+        "customer_name",
+        "phone_number",
         "gender",
         "age",
         "product_category",
@@ -550,41 +637,89 @@ def predict():
     ]
 
 
-    missing = [
-        field
-        for field in required_fields
-        if field not in data
-        or str(data[field]).strip() == ""
-    ]
+    missing = []
+
+    for field in required_fields:
+
+        value = data.get(field)
+
+        if value is None or str(value).strip() == "":
+            missing.append(field)
 
 
     if missing:
 
         return jsonify({
-            "error":
-                "Missing fields: "
-                + ", ".join(missing)
+            "error": "Missing fields: " + ", ".join(missing)
         }), 400
 
 
-    # Validate age
+    # --------------------------------------------------------
+    # NAME VALIDATION
+    # --------------------------------------------------------
+
+    customer_name = str(data["customer_name"]).strip()
+
+    if len(customer_name) < 2:
+
+        return jsonify({
+            "error": "Please enter a valid customer name."
+        }), 400
+
+
+    # --------------------------------------------------------
+    # PHONE VALIDATION
+    # --------------------------------------------------------
+
+    phone_number = str(data["phone_number"]).strip()
+
+    phone_clean = re.sub(r"[\s\-()]", "", phone_number)
+
+    if not re.fullmatch(r"\+?[0-9]{7,15}", phone_clean):
+
+        return jsonify({
+            "error": "Please enter a valid phone number."
+        }), 400
+
+
+    # --------------------------------------------------------
+    # AGE VALIDATION
+    # --------------------------------------------------------
+
     try:
 
         age = int(data["age"])
 
-        if age < 1 or age > 120:
-
-            return jsonify({
-                "error":
-                    "Age must be between 1 and 120."
-            }), 400
-
     except (TypeError, ValueError):
 
         return jsonify({
-            "error":
-                "Age must be a valid number."
+            "error": "Age must be a valid number."
         }), 400
+
+
+    if age < 18:
+
+        return jsonify({
+            "error": "Only customers aged 18 or above can submit a complaint."
+        }), 403
+
+
+    if age > 120:
+
+        return jsonify({
+            "error": "Please enter a valid age."
+        }), 400
+
+
+    # --------------------------------------------------------
+    # OTHER FIELDS
+    # --------------------------------------------------------
+
+    gender = str(data["gender"]).strip()
+
+    product_category = str(
+        data["product_category"]
+    ).strip()
 
 
     complaint = str(
@@ -595,19 +730,53 @@ def predict():
     if len(complaint) < 5:
 
         return jsonify({
-            "error":
-                "Complaint description is too short."
+            "error": "Please provide a more detailed complaint."
         }), 400
 
 
-    # ========================================================
+    if len(complaint) > 1000:
+
+        return jsonify({
+            "error": "Complaint must be 1000 characters or less."
+        }), 400
+
+
+    # --------------------------------------------------------
     # AI PREDICTION
-    # ========================================================
+    # --------------------------------------------------------
 
-    category, confidence = predict_category(
-        complaint
-    )
+    probabilities = model.predict_proba([complaint])[0]
 
+    best_index = probabilities.argmax()
+
+    confidence = probabilities[best_index]
+
+    predicted_category = model.classes_[best_index]
+
+
+    # --------------------------------------------------------
+    # LOW-CONFIDENCE FALLBACK
+    # --------------------------------------------------------
+
+    if confidence < 0.32:
+
+        category = "General Product Complaint"
+
+        department = "Customer Support"
+
+    else:
+
+        category = predicted_category
+
+        department = DEPARTMENT_MAP.get(
+            category,
+            "Customer Support"
+        )
+
+
+    # --------------------------------------------------------
+    # PRIORITY
+    # --------------------------------------------------------
 
     priority = get_priority(
         category,
@@ -615,53 +784,41 @@ def predict():
     )
 
 
-    department = DEPARTMENT_MAP.get(
+    # --------------------------------------------------------
+    # RESPONSE
+    # --------------------------------------------------------
+
+    suggested_response = generate_response(
         category,
-        "Customer Support"
+        complaint
     )
 
 
-    suggested_response = RESPONSE_MAP.get(
-        category,
-        RESPONSE_MAP["General Complaint"]
-    )
-
-
-    # ========================================================
-    # RETURN RESULT
-    # ========================================================
+    # --------------------------------------------------------
+    # FINAL RESPONSE
+    # --------------------------------------------------------
 
     return jsonify({
 
-        "complaint_category":
-            category,
+        "complaint_category": category,
 
-        "priority":
-            priority,
+        "priority": priority,
 
-        "department":
-            department,
+        "department": department,
 
-        "suggested_response":
-            suggested_response
+        "suggested_response": suggested_response
 
     })
 
 
 # ============================================================
-# RUN APPLICATION
+# RUN SERVER
 # ============================================================
 
 if __name__ == "__main__":
 
-    port = int(
-        os.environ.get(
-            "PORT",
-            5000
-        )
-    )
-
     app.run(
-        host="0.0.0.0",
-        port=port
+        host="127.0.0.1",
+        port=5000,
+        debug=True
     )
