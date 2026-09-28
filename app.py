@@ -33,6 +33,8 @@ training_data = [
     ("my phone battery is getting low quickly", "Battery Issue"),
     ("battery does not last long", "Battery Issue"),
     ("my battery drains too fast", "Battery Issue"),
+    ("battery is overheating", "Battery Issue"),
+    ("battery is swollen", "Battery Issue"),
 
     # =====================================================
     # CHARGING
@@ -268,16 +270,20 @@ labels = [item[1] for item in training_data]
 
 
 features = FeatureUnion([
+
     (
         "word_tfidf",
+
         TfidfVectorizer(
             lowercase=True,
             ngram_range=(1, 2),
             sublinear_tf=True
         )
     ),
+
     (
         "character_tfidf",
+
         TfidfVectorizer(
             lowercase=True,
             analyzer="char_wb",
@@ -289,9 +295,12 @@ features = FeatureUnion([
 
 
 model = Pipeline([
+
     ("features", features),
+
     (
         "classifier",
+
         LogisticRegression(
             max_iter=2000,
             class_weight="balanced"
@@ -311,6 +320,7 @@ department_mapping = {
 
     "Battery Issue": "Electronics Support",
     "Charging Issue": "Electronics Support",
+
     "Screen/Display Issue": "Technical Support",
     "Hardware Issue": "Technical Support",
     "Software Issue": "Technical Support",
@@ -332,11 +342,14 @@ department_mapping = {
 
     "Account/Login Issue": "Account Support",
     "Customer Service Issue": "Customer Support",
+
     "Subscription Issue": "Billing & Payments",
 
     "Security Issue": "Security Support",
 
-    "General Product Complaint": "Customer Support"
+    "General Product Complaint": "Customer Support",
+
+    "Invalid Complaint": "Customer Support"
 }
 
 
@@ -354,13 +367,177 @@ def clean_text(text):
 
 
 # =========================================================
+# INVALID / RANDOM INPUT DETECTION
+# =========================================================
+
+def is_valid_complaint(complaint):
+
+    text = clean_text(complaint)
+
+    # Remove punctuation for easier checking
+    words = re.findall(r"[a-zA-Z]+", text)
+
+    if not words:
+        return False
+
+    # Reject extremely short random text
+    if len(text) < 5:
+        return False
+
+    # -----------------------------------------------------
+    # Product / service related keywords
+    # -----------------------------------------------------
+
+    complaint_keywords = [
+
+        # Products / devices
+        "product",
+        "item",
+        "device",
+        "phone",
+        "mobile",
+        "computer",
+        "laptop",
+        "tablet",
+        "charger",
+        "battery",
+        "screen",
+        "display",
+        "hardware",
+        "software",
+        "application",
+        "app",
+
+        # Connectivity
+        "wifi",
+        "wi-fi",
+        "internet",
+        "network",
+        "bluetooth",
+        "connection",
+        "connect",
+
+        # Orders / delivery
+        "order",
+        "package",
+        "delivery",
+        "delivered",
+        "shipping",
+        "received",
+        "arrived",
+
+        # Payments / refunds
+        "payment",
+        "paid",
+        "refund",
+        "money",
+        "transaction",
+        "charged",
+        "billing",
+
+        # Problems
+        "broken",
+        "damaged",
+        "cracked",
+        "faulty",
+        "defective",
+        "problem",
+        "issue",
+        "complaint",
+        "not working",
+        "doesn't work",
+        "does not work",
+        "failed",
+        "failure",
+        "poor quality",
+        "quality",
+        "wrong",
+
+        # Requests
+        "replace",
+        "replacement",
+        "cancel",
+        "cancellation",
+        "warranty",
+        "support",
+        "customer service",
+
+        # Account
+        "account",
+        "login",
+        "password",
+        "access",
+
+        # Subscription
+        "subscription",
+
+        # Security
+        "hacked",
+        "security",
+        "unauthorized",
+        "suspicious",
+
+        # Safety
+        "fire",
+        "smoke",
+        "burning",
+        "spark",
+        "sparking",
+        "overheating"
+    ]
+
+    # -----------------------------------------------------
+    # Known complaint keyword
+    # -----------------------------------------------------
+
+    if any(keyword in text for keyword in complaint_keywords):
+        return True
+
+    # -----------------------------------------------------
+    # Common general complaint phrases
+    # -----------------------------------------------------
+
+    general_phrases = [
+
+        "not satisfied",
+        "need help",
+        "need assistance",
+        "want help",
+        "customer complaint",
+        "service problem",
+        "service issue",
+        "having trouble",
+        "having a problem",
+        "something is wrong"
+    ]
+
+    if any(phrase in text for phrase in general_phrases):
+        return True
+
+    # -----------------------------------------------------
+    # Detect obvious gibberish
+    # -----------------------------------------------------
+
+    # If a single long word has no vowels, it is likely random.
+    if len(words) == 1:
+
+        word = words[0].lower()
+
+        if len(word) >= 7 and not re.search(r"[aeiou]", word):
+            return False
+
+    # If there are no recognized complaint terms,
+    # treat the input as unrelated.
+    return False
+
+
+# =========================================================
 # RULE-BASED CATEGORY DETECTION
 # =========================================================
 
 def apply_specific_rules(complaint):
 
     text = clean_text(complaint)
-
 
     # -----------------------------------------------------
     # SECURITY
@@ -419,7 +596,9 @@ def apply_specific_rules(complaint):
         "battery problem",
         "battery issue",
         "battery swollen",
-        "swollen battery"
+        "swollen battery",
+        "battery overheating",
+        "battery overheat"
     ]
 
     if any(word in text for word in battery_words):
@@ -461,6 +640,66 @@ def apply_specific_rules(complaint):
 
     if any(word in text for word in screen_words):
         return "Screen/Display Issue"
+
+
+    # -----------------------------------------------------
+    # SOFTWARE
+    # -----------------------------------------------------
+
+    software_words = [
+        "software",
+        "application",
+        "app",
+        "crashing",
+        "crashes",
+        "freezing",
+        "frozen",
+        "not responding",
+        "system is slow",
+        "phone is slow"
+    ]
+
+    if any(word in text for word in software_words):
+        return "Software Issue"
+
+
+    # -----------------------------------------------------
+    # CONNECTIVITY
+    # -----------------------------------------------------
+
+    connectivity_words = [
+        "wifi",
+        "wi-fi",
+        "bluetooth",
+        "internet",
+        "network",
+        "connection",
+        "cannot connect",
+        "can't connect",
+        "not connecting"
+    ]
+
+    if any(word in text for word in connectivity_words):
+        return "Connectivity Issue"
+
+
+    # -----------------------------------------------------
+    # HARDWARE
+    # -----------------------------------------------------
+
+    hardware_words = [
+        "hardware",
+        "not turning on",
+        "does not turn on",
+        "doesn't turn on",
+        "won't turn on",
+        "device stopped working",
+        "phone stopped working",
+        "completely stopped working"
+    ]
+
+    if any(word in text for word in hardware_words):
+        return "Hardware Issue"
 
 
     # -----------------------------------------------------
@@ -506,8 +745,7 @@ def apply_specific_rules(complaint):
         "wrong item",
         "different product",
         "different item",
-        "not what i ordered",
-        "not what I ordered".lower()
+        "not what i ordered"
     ]
 
     if any(word in text for word in wrong_product_words):
@@ -585,6 +823,22 @@ def apply_specific_rules(complaint):
 
 
     # -----------------------------------------------------
+    # ORDER CANCELLATION
+    # -----------------------------------------------------
+
+    cancellation_words = [
+        "cancel my order",
+        "cancel the order",
+        "cancel my product",
+        "order cancellation",
+        "want to cancel"
+    ]
+
+    if any(word in text for word in cancellation_words):
+        return "Order Cancellation"
+
+
+    # -----------------------------------------------------
     # REPLACEMENT
     # -----------------------------------------------------
 
@@ -646,6 +900,38 @@ def apply_specific_rules(complaint):
         return "Customer Service Issue"
 
 
+    # -----------------------------------------------------
+    # SUBSCRIPTION
+    # -----------------------------------------------------
+
+    subscription_words = [
+        "subscription",
+        "subscription problem",
+        "subscription issue",
+        "cancel subscription"
+    ]
+
+    if any(word in text for word in subscription_words):
+        return "Subscription Issue"
+
+
+    # -----------------------------------------------------
+    # GENERAL PRODUCT COMPLAINT
+    # -----------------------------------------------------
+
+    general_words = [
+        "problem with my product",
+        "issue with my product",
+        "complaint about my product",
+        "not satisfied with my product",
+        "problem with my order",
+        "issue with my order"
+    ]
+
+    if any(word in text for word in general_words):
+        return "General Product Complaint"
+
+
     return None
 
 
@@ -657,9 +943,8 @@ def determine_priority(category, complaint):
 
     text = clean_text(complaint)
 
-
     # =====================================================
-    # HIGH PRIORITY — SAFETY / SERIOUS FUNCTIONAL ISSUES
+    # HIGH PRIORITY
     # =====================================================
 
     high_words = [
@@ -691,7 +976,9 @@ def determine_priority(category, complaint):
         return "High"
 
 
-    # Device completely not working / cannot turn on
+    # =====================================================
+    # SERIOUS DEVICE FAILURE
+    # =====================================================
 
     serious_failure_words = [
         "not turning on",
@@ -707,7 +994,9 @@ def determine_priority(category, complaint):
         return "High"
 
 
-    # High priority categories
+    # =====================================================
+    # HIGH PRIORITY CATEGORIES
+    # =====================================================
 
     if category in {
         "Battery Issue",
@@ -751,7 +1040,9 @@ def determine_priority(category, complaint):
         return "Medium"
 
 
-    # Medium categories
+    # =====================================================
+    # MEDIUM CATEGORIES
+    # =====================================================
 
     if category in {
         "Screen/Display Issue",
@@ -760,14 +1051,12 @@ def determine_priority(category, complaint):
         "Refund Issue",
         "Payment Issue",
         "Replacement Request",
-        "Warranty Issue"
+        "Warranty Issue",
+        "Delivery Delay",
+        "Order Cancellation"
     }:
         return "Medium"
 
-
-    # =====================================================
-    # LOW PRIORITY
-    # =====================================================
 
     return "Low"
 
@@ -782,7 +1071,20 @@ def generate_response(category, complaint):
 
 
     # -----------------------------------------------------
-    # COLOR / APPEARANCE MISMATCH
+    # INVALID COMPLAINT
+    # -----------------------------------------------------
+
+    if category == "Invalid Complaint":
+
+        return (
+            "Please enter a valid complaint related to a "
+            "product or service so that the AI system can "
+            "analyze it correctly."
+        )
+
+
+    # -----------------------------------------------------
+    # COLOR / APPEARANCE
     # -----------------------------------------------------
 
     if category == "Product Quality Issue":
@@ -1091,12 +1393,21 @@ def script_js():
         ".",
         "script.js"
     )
+
+
+# =========================================================
+# GOOGLE SEARCH CONSOLE VERIFICATION
+# =========================================================
+
 @app.get("/google5502be35b740b60.html")
 def google_verification():
+
     return send_from_directory(
         ".",
         "google5502be35b740b60.html"
     )
+
+
 # =========================================================
 # HEALTH CHECK
 # =========================================================
@@ -1105,8 +1416,11 @@ def google_verification():
 def health():
 
     return jsonify({
+
         "status": "ok",
+
         "model": "Smart Complaint AI",
+
         "training_examples": len(training_data)
     })
 
@@ -1128,6 +1442,7 @@ def predict():
     # =====================================================
 
     required_fields = [
+
         "customer_name",
         "phone_number",
         "gender",
@@ -1151,9 +1466,11 @@ def predict():
     if missing:
 
         return jsonify({
+
             "error":
                 "Missing fields: "
                 + ", ".join(missing)
+
         }), 400
 
 
@@ -1169,8 +1486,10 @@ def predict():
     if len(customer_name) < 2:
 
         return jsonify({
+
             "error":
                 "Please enter a valid customer name."
+
         }), 400
 
 
@@ -1196,8 +1515,10 @@ def predict():
     ):
 
         return jsonify({
+
             "error":
                 "Please enter a valid phone number."
+
         }), 400
 
 
@@ -1217,24 +1538,30 @@ def predict():
     ):
 
         return jsonify({
+
             "error":
                 "Age must be a valid number."
+
         }), 400
 
 
     if age < 18:
 
         return jsonify({
+
             "error":
                 "Customer must be 18 years or older."
+
         }), 400
 
 
     if age > 120:
 
         return jsonify({
+
             "error":
                 "Please enter a valid age."
+
         }), 400
 
 
@@ -1250,16 +1577,20 @@ def predict():
     if len(complaint) < 5:
 
         return jsonify({
+
             "error":
                 "Complaint must contain at least 5 characters."
+
         }), 400
 
 
     if len(complaint) > 1000:
 
         return jsonify({
+
             "error":
                 "Complaint cannot exceed 1000 characters."
+
         }), 400
 
 
@@ -1273,7 +1604,32 @@ def predict():
 
 
     # =====================================================
-    # STEP 1:
+    # STEP 1
+    # INPUT RELEVANCE CHECK
+    # =====================================================
+
+    if not is_valid_complaint(complaint):
+
+        return jsonify({
+
+            "complaint_category":
+                "Invalid Complaint",
+
+            "priority":
+                "Low",
+
+            "department":
+                "Customer Support",
+
+            "suggested_response":
+                "Please enter a valid complaint related to "
+                "a product or service so that the AI system "
+                "can analyze it correctly."
+        })
+
+
+    # =====================================================
+    # STEP 2
     # RULE-BASED CLASSIFICATION
     # =====================================================
 
@@ -1283,7 +1639,7 @@ def predict():
 
 
     # =====================================================
-    # STEP 2:
+    # STEP 3
     # MACHINE LEARNING CLASSIFICATION
     # =====================================================
 
@@ -1311,13 +1667,11 @@ def predict():
 
 
     # =====================================================
+    # STEP 4
     # FINAL CATEGORY
     # =====================================================
 
     if rule_category:
-
-        # Specific rules have priority because they
-        # handle important complaint phrases directly.
 
         final_category = rule_category
 
@@ -1327,12 +1681,15 @@ def predict():
 
 
     # =====================================================
-    # LOW CONFIDENCE FALLBACK
+    # STEP 5
+    # ML CONFIDENCE CHECK
     # =====================================================
 
-    # Only use the fallback when:
-    # 1. There is no specific rule match
-    # 2. ML confidence is very low
+    # If there is no rule match and the ML model is not
+    # sufficiently confident, use the general category
+    # only for meaningful complaint text.
+    #
+    # Random/unrelated text has already been rejected above.
 
     if (
         not rule_category
@@ -1345,6 +1702,7 @@ def predict():
 
 
     # =====================================================
+    # STEP 6
     # DEPARTMENT
     # =====================================================
 
@@ -1355,6 +1713,7 @@ def predict():
 
 
     # =====================================================
+    # STEP 7
     # PRIORITY
     # =====================================================
 
@@ -1365,6 +1724,7 @@ def predict():
 
 
     # =====================================================
+    # STEP 8
     # SUGGESTED RESPONSE
     # =====================================================
 
@@ -1404,11 +1764,15 @@ if __name__ == "__main__":
     print("======================================")
     print("       SMART COMPLAINT AI")
     print("======================================")
+
     print("Server:")
     print("http://127.0.0.1:5000")
+
     print("")
+
     print("Health:")
     print("http://127.0.0.1:5000/health")
+
     print("======================================")
     print("")
 
