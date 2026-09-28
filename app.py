@@ -1091,8 +1091,12 @@ def script_js():
         ".",
         "script.js"
     )
-
-
+@app.get("/google5502be35b740b60.html")
+def google_verification():
+    return send_from_directory(
+        ".",
+        "google5502be35b740b60.html"
+    )
 # =========================================================
 # HEALTH CHECK
 # =========================================================
