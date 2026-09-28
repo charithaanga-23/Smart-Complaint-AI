@@ -3,87 +3,358 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="google-site-verification" content="uuMHXNL4Pbdpih9945tGALwYvrY6YrJYkxpumYeYgTM" />
-<title>Smart Complaint AI - Log in</title>
+
+<meta name="google-site-verification" content="uuMHXNL4Pbdpih9945tGALwYvrY6YrJYkxpumYeYgTM">
+
+<title>Smart Complaint AI - Student Project Demo</title>
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
-body{min-height:100vh;display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#0f172a,#312e81,#2563eb);padding:20px}
-.login-card{width:400px;padding:38px;background:rgba(255,255,255,.97);border-radius:22px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
-.logo{text-align:center;font-size:50px;margin-bottom:8px}
-h1{color:#1e293b;font-family:Georgia,serif;font-size:38px;font-weight:600;margin-bottom:10px}
-.account-text{color:#64748b;font-size:14px;margin-bottom:25px}.account-text a,.links a{color:#4f46e5;text-decoration:underline;cursor:pointer}
-.features{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:25px}.features span{background:#eef2ff;color:#4338ca;padding:6px 9px;border-radius:20px;font-size:10px;font-weight:bold}
-.input-group{text-align:left;margin-bottom:18px}label{display:block;margin-bottom:7px;color:#334155;font-weight:bold;font-size:13px}
-input[type="text"],input[type="password"]{width:100%;height:43px;padding:10px 13px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px;outline:none;background:white}
-input:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.15)}.password-wrapper{position:relative}.password-wrapper input{padding-right:65px}
-.toggle-password{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:auto;margin:0;padding:5px 7px;border:none;background:transparent;color:#4f46e5;font-size:12px;font-weight:bold;cursor:pointer}.toggle-password:hover{text-decoration:underline}
-.keep-login{display:flex;align-items:center;gap:9px;margin:5px 0 23px;color:#475569;font-size:13px}.keep-login input{width:18px;height:18px;accent-color:#4f46e5;cursor:pointer}.keep-login label{margin:0;font-weight:normal;cursor:pointer}
-.login-btn{width:120px;padding:12px 20px;border:none;border-radius:10px;background:linear-gradient(90deg,#4f46e5,#2563eb);color:white;font-size:15px;font-weight:bold;cursor:pointer}.login-btn:hover{opacity:.9;transform:translateY(-1px)}
-#error{display:none;color:#dc2626;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:9px 11px;margin-top:15px;font-size:13px}
-.links{margin-top:25px;font-size:13px}.links-row{display:flex;gap:18px;margin-bottom:15px}.project-note{margin-top:24px;padding-top:18px;border-top:1px solid #e2e8f0;text-align:center;color:#94a3b8;font-size:11px;line-height:1.5}
-.create-account{margin-top:18px;text-align:center;font-size:13px;color:#64748b}.create-account a{color:#4f46e5;font-weight:700;text-decoration:underline;cursor:pointer}.modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.65);align-items:center;justify-content:center;padding:20px;z-index:10}.modal-card{width:390px;max-width:100%;background:white;border-radius:18px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.35)}.modal-card h2{color:#1e293b;margin-bottom:7px}.modal-card p{color:#64748b;font-size:13px;margin-bottom:18px}.modal-actions{display:flex;gap:10px;margin-top:18px}.modal-actions button{width:auto!important;flex:1!important;margin:0!important}.cancel-btn{background:#e2e8f0!important;color:#334155!important}.register-btn{background:linear-gradient(90deg,#4f46e5,#2563eb)!important;color:white!important}@media(max-width:480px){.login-card{width:100%;padding:30px 24px}}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0f172a, #312e81, #2563eb);
+    padding: 20px;
+}
+
+.login-card {
+    width: 400px;
+    padding: 38px;
+    background: rgba(255,255,255,.97);
+    border-radius: 22px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.3);
+}
+
+.logo {
+    text-align: center;
+    font-size: 50px;
+    margin-bottom: 8px;
+}
+
+h1 {
+    text-align: center;
+    color: #1e293b;
+    font-family: Georgia, serif;
+    font-size: 34px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.demo-note {
+    background: #eef2ff;
+    color: #3730a3;
+    border: 1px solid #c7d2fe;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    color: #334155;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    height: 43px;
+    padding: 10px 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    font-size: 15px;
+    outline: none;
+    background: white;
+}
+
+input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 65px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #4f46e5;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.keep-login {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 5px 0 23px;
+    color: #475569;
+    font-size: 13px;
+}
+
+.keep-login input {
+    width: 18px;
+    height: 18px;
+    accent-color: #4f46e5;
+    cursor: pointer;
+}
+
+.keep-login label {
+    margin: 0;
+    font-weight: normal;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #4f46e5, #2563eb);
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    opacity: .9;
+}
+
+#error {
+    display: none;
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 9px 11px;
+    margin-top: 15px;
+    font-size: 13px;
+}
+
+.project-note {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+@media(max-width:480px) {
+    .login-card {
+        width: 100%;
+        padding: 30px 24px;
+    }
+}
 </style>
 </head>
+
 <body>
+
 <div class="login-card">
-<div class="logo">🤖</div>
-<h1>Log in</h1>
-<p class="account-text">Welcome to Smart Complaint AI. <a href="#" onclick="showInfo(event)">Learn more</a></p><div class="create-account">Don't have an account? <a href="#" onclick="openCreateAccount(event)">Create an account</a></div>
-<div class="features"><span>🤖 AI Classification</span><span>⚡ Priority Detection</span><span>📊 Smart Routing</span></div>
-<form id="loginForm">
-<div class="input-group"><label for="username">Username or Email</label><input type="text" id="username" autocomplete="username" required></div>
-<div class="input-group"><label for="password">Password</label><div class="password-wrapper"><input type="password" id="password" autocomplete="current-password" required><button type="button" class="toggle-password" id="togglePassword">👁 Show</button></div></div>
-<div class="keep-login"><input type="checkbox" id="keepLoggedIn"><label for="keepLoggedIn">Keep me logged in</label></div>
-<button type="submit" class="login-btn">Log in</button><p id="error"></p>
-</form>
-<div class="links"><div class="links-row"><a href="#" onclick="forgotUsername(event)">Forgot username?</a><a href="#" onclick="forgotPassword(event)">Forgot password?</a></div><a href="#" onclick="cantLogin(event)">Can't log in?</a></div>
-<div class="project-note"><strong>Smart Complaint AI</strong><br>AI-powered customer complaint classification system</div>
+
+    <div class="logo">🤖</div>
+
+    <h1>Log in</h1>
+
+    <p class="subtitle">
+        Welcome to Smart Complaint AI
+    </p>
+
+    <div class="demo-note">
+        <strong>Student Project Demo</strong><br>
+        This website is an academic demonstration of an
+        AI-based customer complaint classification system.
+        Please do not enter real passwords or sensitive information.
+    </div>
+
+    <form id="loginForm">
+
+        <div class="input-group">
+            <label for="username">
+                Username
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                autocomplete="off"
+                placeholder="Enter demo username"
+                required
+            >
+        </div>
+
+        <div class="input-group">
+
+            <label for="password">
+                Password
+            </label>
+
+            <div class="password-wrapper">
+
+                <input
+                    type="password"
+                    id="password"
+                    autocomplete="off"
+                    placeholder="Enter demo password"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="toggle-password"
+                    id="togglePassword"
+                >
+                    👁 Show
+                </button>
+
+            </div>
+        </div>
+
+        <div class="keep-login">
+
+            <input
+                type="checkbox"
+                id="keepLoggedIn"
+            >
+
+            <label for="keepLoggedIn">
+                Keep me logged in
+            </label>
+
+        </div>
+
+        <button
+            type="submit"
+            class="login-btn"
+        >
+            Log in
+        </button>
+
+        <p id="error"></p>
+
+    </form>
+
+    <div class="project-note">
+        <strong>Demo credentials</strong><br>
+        Username: admin<br>
+        Password: 1234<br><br>
+
+        Smart Complaint AI<br>
+        AI-powered customer complaint classification system
+    </div>
+
 </div>
 
-<div class="modal" id="createAccountModal">
-    <div class="modal-card">
-        <h2>Create an account</h2>
-        <p>Create a demo account to access Smart Complaint AI.</p>
-        <form id="createAccountForm">
-            <div class="input-group"><label for="newName">Full Name</label><input type="text" id="newName" required></div>
-            <div class="input-group"><label for="newUsername">Username or Email</label><input type="text" id="newUsername" required></div>
-            <div class="input-group"><label for="newPassword">Password</label><input type="password" id="newPassword" minlength="4" required></div>
-            <div class="input-group"><label for="confirmPassword">Confirm Password</label><input type="password" id="confirmPassword" minlength="4" required></div>
-            <p id="registerError" style="display:none;color:#dc2626;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:9px;font-size:13px;margin:0 0 12px"></p>
-            <div class="modal-actions">
-                <button type="button" class="login-btn cancel-btn" onclick="closeCreateAccount()">Cancel</button>
-                <button type="submit" class="login-btn register-btn">Create Account</button>
-            </div>
-        </form>
-    </div>
-</div>
+
 <script>
-document.getElementById("loginForm").addEventListener("submit",function(event){event.preventDefault();const username=document.getElementById("username").value.trim();const password=document.getElementById("password").value.trim();const error=document.getElementById("error");const savedAccount=JSON.parse(localStorage.getItem("smartComplaintAccount")||"null");
-const validDefault=username==="admin"&&password==="1234";
-const validSaved=savedAccount&&savedAccount.username===username&&savedAccount.password===password;
-if(validDefault||validSaved){error.style.display="none";localStorage.setItem("loggedIn","true");window.location.href="index.html";}else{error.style.display="block";error.textContent="Invalid username or password.";}});
-document.getElementById("togglePassword").addEventListener("click",function(){const password=document.getElementById("password");if(password.type==="password"){password.type="text";this.textContent="👁 Hide";}else{password.type="password";this.textContent="👁 Show";}});
-function showInfo(event){event.preventDefault();alert("Smart Complaint AI analyzes customer complaints using machine learning and recommends a category, priority, department, and response.");}
-function forgotUsername(event){event.preventDefault();alert("For this student-project demo, use the username: admin");}
-function forgotPassword(event){event.preventDefault();alert("For this student-project demo, use the password: 1234");}
-function cantLogin(event){event.preventDefault();alert("Demo login: Username = admin | Password = 1234");}
-function openCreateAccount(event){event.preventDefault();document.getElementById("createAccountModal").style.display="flex";}
-function closeCreateAccount(){document.getElementById("createAccountModal").style.display="none";document.getElementById("createAccountForm").reset();document.getElementById("registerError").style.display="none";}
-document.getElementById("createAccountForm").addEventListener("submit",function(event){
+
+const loginForm =
+    document.getElementById("loginForm");
+
+const error =
+    document.getElementById("error");
+
+
+/* Demo login */
+loginForm.addEventListener("submit", function(event) {
+
     event.preventDefault();
-    const name=document.getElementById("newName").value.trim();
-    const username=document.getElementById("newUsername").value.trim();
-    const password=document.getElementById("newPassword").value;
-    const confirm=document.getElementById("confirmPassword").value;
-    const registerError=document.getElementById("registerError");
-    if(password!==confirm){registerError.style.display="block";registerError.textContent="Passwords do not match.";return;}
-    if(username==="admin"){registerError.style.display="block";registerError.textContent="That username is reserved for the demo account.";return;}
-    localStorage.setItem("smartComplaintAccount",JSON.stringify({name:name,username:username,password:password}));
-    closeCreateAccount();
-    document.getElementById("username").value=username;
-    document.getElementById("password").value=password;
-    alert("Account created successfully! You can now log in.");
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    /*
+       Fixed demo credentials only.
+       No user passwords are stored.
+    */
+
+    if (username === "admin" && password === "1234") {
+
+        error.style.display = "none";
+
+        localStorage.setItem("loggedIn", "true");
+
+        window.location.href = "index.html";
+
+    } else {
+
+        error.style.display = "block";
+
+        error.textContent =
+            "Incorrect demo username or password.";
+
+    }
+
 });
+
+
+/* Show / Hide password */
+
+document
+    .getElementById("togglePassword")
+    .addEventListener("click", function() {
+
+        const password =
+            document.getElementById("password");
+
+        if (password.type === "password") {
+
+            password.type = "text";
+
+            this.textContent = "👁 Hide";
+
+        } else {
+
+            password.type = "password";
+
+            this.textContent = "👁 Show";
+
+        }
+
+    });
+
 </script>
+
 </body>
 </html>
